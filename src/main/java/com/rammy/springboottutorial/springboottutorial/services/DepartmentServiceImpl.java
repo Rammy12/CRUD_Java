@@ -1,43 +1,49 @@
 package com.rammy.springboottutorial.springboottutorial.services;
 
 import com.rammy.springboottutorial.springboottutorial.dto.DepartmentDTO;
+import com.rammy.springboottutorial.springboottutorial.dto.EmployeeDTO;
 import com.rammy.springboottutorial.springboottutorial.entities.DepartmentEntity;
 import com.rammy.springboottutorial.springboottutorial.entities.EmployeeEntity;
 import com.rammy.springboottutorial.springboottutorial.exceptions.ResourceNotFoundException;
 import com.rammy.springboottutorial.springboottutorial.repositories.DepartmentRepository;
 import com.rammy.springboottutorial.springboottutorial.repositories.EmployeeRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class DepartmentServiceImpl implements DepartmentService {
     private final EmployeeRepository employeeRepository;
     private final ModelMapper modelMapper;
     private final DepartmentRepository departmentRepository;
 
-    public DepartmentServiceImpl(EmployeeRepository employeeRepository, ModelMapper modelMapper, DepartmentRepository departmentRepository) {
-        this.employeeRepository = employeeRepository;
-        this.modelMapper = modelMapper;
-        this.departmentRepository = departmentRepository;
-    }
-
     @Override
-    public Optional<DepartmentDTO> getDepartmentById(Long departmentId) {
-        return departmentRepository.findById(departmentId).map(departmentEntity -> modelMapper.map(departmentEntity,DepartmentDTO.class));
+    public DepartmentDTO getDepartmentById(Long departmentId) {
+        log.info("Fetching employee with id: {}", departmentId);
+        DepartmentEntity department = findDepartmentById(departmentId);
+        log.info("Successfully fetched employee with id: {}", departmentId);
+        return modelMapper.map(department, DepartmentDTO.class);
     }
 
     @Override
     public List<DepartmentDTO> getAllDepartments() {
-        return departmentRepository
-                .findAll()
-                .stream()
-                .map(departmentEntity -> modelMapper.map(departmentEntity,DepartmentDTO.class))
-                .collect(Collectors.toList());
+        log.info("Fetching departments from getAllDepartments");
+        try {
+            return departmentRepository.findAll()
+                    .stream()
+                    .map(departmentEntity -> modelMapper.map(departmentEntity, DepartmentDTO.class))
+                    .collect(Collectors.toList());
+        }catch (Exception e){
+            log.error("Error while fetching departments: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to fetch departments", e);
+        }
     }
 
     @Override
@@ -88,10 +94,16 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     public void isExistsByDepartmentId(Long departmentId) {
         boolean exits = departmentRepository.existsById(departmentId);
-        if (!exits) throw new ResourceNotFoundException("Employee not found with id: " + departmentId);
+        if (!exits) {
+            log.error("Department not found with id: {}", departmentId);
+            throw new ResourceNotFoundException("Employee not found with id: " + departmentId);
+        }
     }
-    public void isExistsByEmployeeId(Long employeeId) {
-        boolean exits=employeeRepository.existsById(employeeId);
-        if (!exits) throw new ResourceNotFoundException("Employee not found with id: "+employeeId);
+    private DepartmentEntity findDepartmentById(Long departmentId) {
+        return departmentRepository.findById(departmentId).orElseThrow(
+                ()->{
+                    log.error("Department not found with id: {}", departmentId);
+                    return new ResourceNotFoundException("Department not found with id: "+departmentId);
+                });
     }
 }

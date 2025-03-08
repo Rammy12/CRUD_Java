@@ -22,9 +22,7 @@ public class DepartmentController {
     }
     @GetMapping(path = "/{departmentId}")
     public ResponseEntity<DepartmentDTO> getDepartmentById(@PathVariable Long departmentId){
-        Optional<DepartmentDTO> departmentDTO=departmentService.getDepartmentById(departmentId);
-        return departmentDTO.map(departmentDTO1 -> ResponseEntity.ok(departmentDTO1))
-                .orElseThrow(()->new ResourceNotFoundException("Department not found with Id: "+departmentId));
+        return ResponseEntity.ok(departmentService.getDepartmentById(departmentId));
     }
 
     @GetMapping

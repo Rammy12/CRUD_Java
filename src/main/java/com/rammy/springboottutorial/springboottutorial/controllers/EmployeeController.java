@@ -25,14 +25,12 @@ public class EmployeeController {
     @GetMapping(path = "/{employeeId}")
     public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable(name ="employeeId" ) Long employeeId)
     {
-        Optional<EmployeeDTO> employeeDTO= employeeService.getEmployeeById(employeeId);
-        return employeeDTO.map(employeeDTO1 -> ResponseEntity.ok(employeeDTO1))
-                .orElseThrow(()->new ResourceNotFoundException("Employee not found with id: "+employeeId));
+        return ResponseEntity.ok(employeeService.getEmployeeById(employeeId));
     }
 
     @GetMapping
     public ResponseEntity<List<EmployeeDTO>> getAllEmployees() {
-        return ResponseEntity.ok(employeeService.getAllEmployyes());
+        return ResponseEntity.ok(employeeService.getAllEmployees());
     }
     @PostMapping
     public ResponseEntity<EmployeeDTO> createEmployee(@RequestBody @Valid EmployeeDTO inputEmployee)

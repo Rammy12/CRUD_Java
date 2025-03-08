@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DepartmentService {
-    Optional<DepartmentDTO> getDepartmentById(Long departmentId);
+    DepartmentDTO getDepartmentById(Long departmentId);
     List<DepartmentDTO> getAllDepartments();
     DepartmentDTO createNewDepartment(DepartmentDTO newDepartment);
     boolean deleteDepartmentById(Long departmentId);
