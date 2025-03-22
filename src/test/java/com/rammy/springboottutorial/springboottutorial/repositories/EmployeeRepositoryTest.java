@@ -1,20 +1,32 @@
 package com.rammy.springboottutorial.springboottutorial.repositories;
 
+import com.rammy.springboottutorial.springboottutorial.TestContainerConfiguration;
 import com.rammy.springboottutorial.springboottutorial.entities.EmployeeEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+import org.testcontainers.containers.PostgreSQLContainer;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
+@Import(TestContainerConfiguration.class)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class EmployeeRepositoryTest {
     @Autowired
     private EmployeeRepository employeeRepository;
 
     private EmployeeEntity employeeEntity;
+    @Autowired
+    private PostgreSQLContainer<?> postgreSQLContainer;
+
+    @Test
+    void testDatabaseConnection() {
+        assertThat(postgreSQLContainer.isRunning()).isTrue();
+    }
 
     @BeforeEach
     void setup(){

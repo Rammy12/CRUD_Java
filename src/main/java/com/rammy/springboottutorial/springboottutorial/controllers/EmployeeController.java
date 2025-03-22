@@ -4,6 +4,7 @@ import com.rammy.springboottutorial.springboottutorial.dto.EmployeeDTO;
 import com.rammy.springboottutorial.springboottutorial.exceptions.ResourceNotFoundException;
 import com.rammy.springboottutorial.springboottutorial.services.EmployeeService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,15 +16,11 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/employee")
+@RequiredArgsConstructor
 public class EmployeeController {
     private final EmployeeService employeeService;
-
-    public EmployeeController(EmployeeService employeeService) {
-        this.employeeService = employeeService;
-    }
-
     @GetMapping(path = "/{employeeId}")
-    public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable(name ="employeeId" ) Long employeeId)
+    public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable(name ="employeeId") Long employeeId)
     {
         return ResponseEntity.ok(employeeService.getEmployeeById(employeeId));
     }
